@@ -104,8 +104,11 @@ pub mod resource {
 }
 
 pub mod structure {
+    extern crate byteorder;
+
     use std::fs::File;
-    use std::io::{Read, Error};
+    use std::io::{Read, Error, Cursor};
+    use byteorder::{ReadBytesExt, LittleEndian};
 
     #[derive(Debug)]
     pub struct GraphicInfo {
@@ -139,9 +142,25 @@ pub mod structure {
         }
 
         fn make(buf: &mut [u8]) -> Self {
+            let mut rdr = Cursor::new(&buf);
+
+            let id = rdr.read_u32::<LittleEndian>().unwrap();
+            let address = rdr.read_u32::<LittleEndian>().unwrap();
+            let length = rdr.read_u32::<LittleEndian>().unwrap();
+            let offset_x = rdr.read_i32::<LittleEndian>().unwrap();
+            let offset_y = rdr.read_i32::<LittleEndian>().unwrap();
+            let width = rdr.read_u32::<LittleEndian>().unwrap();
+            let height = rdr.read_u32::<LittleEndian>().unwrap();
+            let tile_east = rdr.read_i8().unwrap();
+            let tile_south = rdr.read_i8().unwrap();
+            let access = rdr.read_i8().unwrap();
+            let mut unknown = [0; 5];
+            rdr.read_i8_into(&mut unknown).unwrap();
+            let map_id = rdr.read_u32::<LittleEndian>().unwrap();
+
             GraphicInfo {
-                id: 0, address: 0, length: 0, offset_x: 0, offset_y: 0, width: 0, height: 0,
-                tile_east: 0, tile_south: 0, access: 0, _unknown: [0; 5], map_id: 0
+                id, address, length, offset_x, offset_y, width, height, tile_east, tile_south, 
+                access, _unknown: unknown, map_id,
             }
         }
     }
