@@ -27,9 +27,9 @@ pub mod resource {
 
     #[derive(Debug)]
     pub struct Files {
-        graphic_info: File,
-        graphic: File,
-        palette: File,
+        pub graphic_info: File,
+        pub graphic: File,
+        pub palette: File,
     }
 
     impl Files {
@@ -103,3 +103,17 @@ pub mod resource {
     }
 }
 
+pub mod structure {
+    use std::fs::File;
+
+    #[derive(Debug)]
+    pub struct GraphicInfo {
+
+    }
+
+    impl GraphicInfo {
+        pub fn new(file: &File) -> Result<Vec<GraphicInfo>, &'static str> {
+            Ok(vec!(GraphicInfo{}))
+        }
+    }
+}

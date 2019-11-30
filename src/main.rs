@@ -3,6 +3,7 @@ extern crate crossgate;
 use std::env;
 use std::process;
 use crossgate::resource::{Paths, Files};
+use crossgate::structure::GraphicInfo;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -17,5 +18,7 @@ fn main() {
         process::exit(2);
     });
 
-    println!("{:?}", files);
+    let graphic_info = GraphicInfo::new(&files.graphic_info);
+
+    println!("{:?}", graphic_info);
 }
