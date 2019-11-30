@@ -107,7 +107,7 @@ pub mod structure {
     extern crate byteorder;
 
     use std::fs::File;
-    use std::io::{Read, Error, Cursor};
+    use std::io::{Read, Error, Cursor, SeekFrom, Seek};
     use byteorder::{ReadBytesExt, LittleEndian};
 
     #[derive(Debug)]
@@ -128,6 +128,7 @@ pub mod structure {
 
     impl GraphicInfo {
         pub fn new(file: &mut File) -> Result<Vec<Self>, Error> {
+            file.seek(SeekFrom::End(-20))?;
             let mut ret = vec![];
 
             loop {
@@ -135,33 +136,33 @@ pub mod structure {
                 if file.read(&mut buffer)? == 0 {
                     break;
                 }
-                ret.push(Self::make(&mut buffer));
+                ret.push(Self::make(&mut buffer).unwrap());
             }
 
             Ok(ret)
         }
 
-        fn make(buf: &mut [u8]) -> Self {
+        fn make(buf: &mut [u8]) -> Result<Self, Error> {
             let mut rdr = Cursor::new(&buf);
 
-            let id = rdr.read_u32::<LittleEndian>().unwrap();
-            let address = rdr.read_u32::<LittleEndian>().unwrap();
-            let length = rdr.read_u32::<LittleEndian>().unwrap();
-            let offset_x = rdr.read_i32::<LittleEndian>().unwrap();
-            let offset_y = rdr.read_i32::<LittleEndian>().unwrap();
-            let width = rdr.read_u32::<LittleEndian>().unwrap();
-            let height = rdr.read_u32::<LittleEndian>().unwrap();
-            let tile_east = rdr.read_i8().unwrap();
-            let tile_south = rdr.read_i8().unwrap();
-            let access = rdr.read_i8().unwrap();
+            let id = rdr.read_u32::<LittleEndian>()?;
+            let address = rdr.read_u32::<LittleEndian>()?;
+            let length = rdr.read_u32::<LittleEndian>()?;
+            let offset_x = rdr.read_i32::<LittleEndian>()?;
+            let offset_y = rdr.read_i32::<LittleEndian>()?;
+            let width = rdr.read_u32::<LittleEndian>()?;
+            let height = rdr.read_u32::<LittleEndian>()?;
+            let tile_east = rdr.read_i8()?;
+            let tile_south = rdr.read_i8()?;
+            let access = rdr.read_i8()?;
             let mut unknown = [0; 5];
-            rdr.read_i8_into(&mut unknown).unwrap();
-            let map_id = rdr.read_u32::<LittleEndian>().unwrap();
+            rdr.read_i8_into(&mut unknown)?;
+            let map_id = rdr.read_u32::<LittleEndian>()?;
 
-            GraphicInfo {
+            Ok(GraphicInfo {
                 id, address, length, offset_x, offset_y, width, height, tile_east, tile_south, 
                 access, _unknown: unknown, map_id,
-            }
+            })
         }
     }
 }
