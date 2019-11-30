@@ -43,5 +43,63 @@ pub mod resource {
             })
         }
     }
+
+    #[cfg(test)]
+    mod test {
+        use super::*;
+
+        #[test]
+        fn it_can_make_paths() {
+            let args: Vec<String> = vec![
+                String::from("./crossgate-graphic"),
+                String::from("GraphicInfo.bin"),
+                String::from("Graphic.bin"),
+                String::from("Palette.cgp"),
+            ];
+            let paths = Paths::new(&args).unwrap();
+
+            assert_eq!(paths.graphic_info, "GraphicInfo.bin");
+            assert_eq!(paths.graphic, "Graphic.bin");
+            assert_eq!(paths.palette, "Palette.cgp");
+        }
+
+        #[test]
+        fn it_cannot_make_paths() {
+            let args: Vec<String> = vec![
+                String::from("./crossgate-graphic"),
+                String::from("GraphicInfo.bin"),
+                String::from("Graphic.bin"),
+                // Lake of Palette.cgp.
+            ];
+            
+            assert!(Paths::new(&args).is_err());
+        }
+
+        #[test]
+        fn it_can_open_files() {
+            let args: Vec<String> = vec![
+                String::from("./crossgate-graphic"),
+                String::from("resources/GraphicInfo_66.bin"),
+                String::from("resources/Graphic_66.bin"),
+                String::from("resources/palet_00.cgp"),
+            ];
+            let paths = Paths::new(&args).unwrap();
+            
+            assert!(Files::new(&paths).is_ok());
+        }
+
+        #[test]
+        fn it_cannot_open_files() {
+            let args: Vec<String> = vec![
+                String::from("./crossgate-graphic"),
+                String::from("resources/GraphicInfo_66.bin"),
+                String::from("resources/Graphic_66.bin"),
+                String::from("resources/palet_00.cgp.d"), // Not found
+            ];
+            let paths = Paths::new(&args).unwrap();
+            
+            assert!(Files::new(&paths).is_err());
+        }
+    }
 }
 
