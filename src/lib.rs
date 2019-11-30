@@ -107,7 +107,7 @@ pub mod structure {
     extern crate byteorder;
 
     use std::fs::File;
-    use std::io::{Read, Error, Cursor, SeekFrom, Seek, ErrorKind};
+    use std::io::{Read, Error, Cursor};
     use byteorder::{ReadBytesExt, LittleEndian};
 
     #[derive(Debug)]
