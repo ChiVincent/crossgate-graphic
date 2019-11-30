@@ -105,15 +105,44 @@ pub mod resource {
 
 pub mod structure {
     use std::fs::File;
+    use std::io::{Read, Error};
 
     #[derive(Debug)]
     pub struct GraphicInfo {
-
+        id: u32,
+        address: u32,
+        length: u32,
+        offset_x: i32,
+        offset_y: i32,
+        width: u32,
+        height: u32,
+        tile_east: i8,
+        tile_south: i8,
+        access: i8,
+        _unknown: [i8; 5],
+        map_id: u32,
     }
 
     impl GraphicInfo {
-        pub fn new(file: &File) -> Result<Vec<GraphicInfo>, &'static str> {
-            Ok(vec!(GraphicInfo{}))
+        pub fn new(file: &mut File) -> Result<Vec<Self>, Error> {
+            let mut ret = vec![];
+
+            loop {
+                let mut buffer = [0; 40];
+                if file.read(&mut buffer)? == 0 {
+                    break;
+                }
+                ret.push(Self::make(&mut buffer));
+            }
+
+            Ok(ret)
+        }
+
+        fn make(buf: &mut [u8]) -> Self {
+            GraphicInfo {
+                id: 0, address: 0, length: 0, offset_x: 0, offset_y: 0, width: 0, height: 0,
+                tile_east: 0, tile_south: 0, access: 0, _unknown: [0; 5], map_id: 0
+            }
         }
     }
 }

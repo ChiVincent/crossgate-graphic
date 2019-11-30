@@ -12,13 +12,13 @@ fn main() {
         eprintln!("Usage: ./crossgate-graphic [GraphicInfo.bin] [Graphic.bin] [Palette.cgp]");
         process::exit(1);
     });
-    let files = Files::new(&paths).unwrap_or_else(|err| {
+    let mut files = Files::new(&paths).unwrap_or_else(|err| {
         eprintln!("Fatal Error: {}", err);
         eprintln!("Please check [GraphicInfo.bin] [Graphic.bin] and [Palette.cgp] exist and readable.");
         process::exit(2);
     });
 
-    let graphic_info = GraphicInfo::new(&files.graphic_info);
+    let graphic_info = GraphicInfo::new(&mut files.graphic_info);
 
     println!("{:?}", graphic_info);
 }
