@@ -27,9 +27,9 @@ pub mod resource {
 
     #[derive(Debug)]
     pub struct Files {
-        graphic_info: File,
-        graphic: File,
-        palette: File,
+        pub graphic_info: File,
+        pub graphic: File,
+        pub palette: File,
     }
 
     impl Files {
@@ -103,3 +103,65 @@ pub mod resource {
     }
 }
 
+pub mod structure {
+    extern crate byteorder;
+
+    use std::fs::File;
+    use std::io::{Read, Error, Cursor};
+    use byteorder::{ReadBytesExt, LittleEndian};
+
+    #[derive(Debug)]
+    pub struct GraphicInfo {
+        id: u32,
+        address: u32,
+        length: u32,
+        offset_x: i32,
+        offset_y: i32,
+        width: u32,
+        height: u32,
+        tile_east: i8,
+        tile_south: i8,
+        access: i8,
+        _unknown: [i8; 5],
+        map_id: u32,
+    }
+
+    impl GraphicInfo {
+        pub fn new(file: &mut File) -> Result<Vec<Self>, Error> {
+            let mut ret = vec![];
+
+            loop {
+                let mut buffer = [0; 40];
+                match file.read_exact(&mut buffer) {
+                    Ok(_) => ret.push(Self::make(&mut buffer)?),
+                    Err(_) => break,
+                }
+            }
+
+            Ok(ret)
+        }
+
+        fn make(buf: &mut [u8]) -> Result<Self, Error> {
+            let mut rdr = Cursor::new(&buf);
+
+            let id = rdr.read_u32::<LittleEndian>()?;
+            let address = rdr.read_u32::<LittleEndian>()?;
+            let length = rdr.read_u32::<LittleEndian>()?;
+            let offset_x = rdr.read_i32::<LittleEndian>()?;
+            let offset_y = rdr.read_i32::<LittleEndian>()?;
+            let width = rdr.read_u32::<LittleEndian>()?;
+            let height = rdr.read_u32::<LittleEndian>()?;
+            let tile_east = rdr.read_i8()?;
+            let tile_south = rdr.read_i8()?;
+            let access = rdr.read_i8()?;
+            let mut unknown = [0; 5];
+            rdr.read_i8_into(&mut unknown)?;
+            let map_id = rdr.read_u32::<LittleEndian>()?;
+
+            Ok(GraphicInfo {
+                id, address, length, offset_x, offset_y, width, height, tile_east, tile_south, 
+                access, _unknown: unknown, map_id,
+            })
+        }
+    }
+}
