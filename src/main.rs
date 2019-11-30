@@ -15,10 +15,9 @@ fn main() {
     let mut files = Files::new(&paths).unwrap_or_else(|err| {
         eprintln!("Fatal Error: {}", err);
         eprintln!("Please check [GraphicInfo.bin] [Graphic.bin] and [Palette.cgp] exist and readable.");
-        process::exit(2);
+        process::exit(1);
     });
+    let graphic_info = GraphicInfo::new(&mut files.graphic_info).unwrap();
 
-    let graphic_info = GraphicInfo::new(&mut files.graphic_info);
-
-    println!("{:?}", graphic_info);
+    println!("{}", graphic_info.len());
 }

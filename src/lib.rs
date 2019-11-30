@@ -107,7 +107,7 @@ pub mod structure {
     extern crate byteorder;
 
     use std::fs::File;
-    use std::io::{Read, Error, Cursor, SeekFrom, Seek};
+    use std::io::{Read, Error, Cursor, SeekFrom, Seek, ErrorKind};
     use byteorder::{ReadBytesExt, LittleEndian};
 
     #[derive(Debug)]
@@ -128,15 +128,14 @@ pub mod structure {
 
     impl GraphicInfo {
         pub fn new(file: &mut File) -> Result<Vec<Self>, Error> {
-            file.seek(SeekFrom::End(-20))?;
             let mut ret = vec![];
 
             loop {
                 let mut buffer = [0; 40];
-                if file.read(&mut buffer)? == 0 {
-                    break;
+                match file.read_exact(&mut buffer) {
+                    Ok(_) => ret.push(Self::make(&mut buffer)?),
+                    Err(_) => break,
                 }
-                ret.push(Self::make(&mut buffer).unwrap());
             }
 
             Ok(ret)
