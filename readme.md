@@ -17,9 +17,10 @@ cargo run [GraphicInfo.bin] [Graphic.bin] [Palet.cgp]
 ```
 
 **注意事項**: 
-- 本解析器目前僅測試「神獸傳奇 + 魔弓傳奇」的版本 `GraphicInfo_xx.bin`, `Graphic_xx.bin`
-- 理論上可以解析「龍之沙漏」版本 `GraphicInfoEx_xx.bin`, `GraphicEx_xx.bin`
+- 本解析器目前僅針對「神獸傳奇 + 魔弓傳奇」的版本開發（適用於 `GraphicInfo_xx.bin` 及 `Graphic_xx.bin` ）
+- 理論上將可以解析「龍之沙漏」版本 `GraphicInfoEx_xx.bin`, `GraphicEx_xx.bin`
 - 因檔案結構不同，故目前完全不支援「樂園之卵」及以後所有版本
+- 目前功能仍在開發中，尚不完備敬請見諒
 
 ## References
 
