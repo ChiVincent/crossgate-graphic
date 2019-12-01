@@ -206,7 +206,7 @@ pub mod structure {
     mod test {
         use super::*;
         use std::fs::File;
-        use std::io::{Seek, SeekFrom};
+        
 
         #[test]
         fn it_can_make_graphic_info() {
