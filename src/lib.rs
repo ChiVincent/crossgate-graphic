@@ -105,10 +105,11 @@ pub mod resource {
 
 pub mod structure {
     extern crate byteorder;
-
+    
     use std::fs::File;
-    use std::io::{Read, Error, Cursor};
+    use std::io::{Read, Error, Cursor, Seek, SeekFrom, ErrorKind};
     use byteorder::{ReadBytesExt, LittleEndian};
+
 
     #[derive(Debug)]
     pub struct GraphicInfo {
@@ -161,6 +162,42 @@ pub mod structure {
             Ok(GraphicInfo {
                 id, address, length, offset_x, offset_y, width, height, tile_east, tile_south, 
                 access, _unknown: unknown, map_id,
+            })
+        }
+    }
+
+    #[derive(Debug)]
+    pub struct Graphic {
+        identifier: [i8; 2],
+        version: i8,
+        _unknown: i8,
+        width: u32,
+        height: u32,
+        length: u32,
+        data: Vec<i8>,
+    }
+
+    impl Graphic {
+        pub fn new (graphic_info: &GraphicInfo, graphic: &mut File) -> Result<Self, Error> {
+            graphic.seek(SeekFrom::Start(graphic_info.address.into()))?;
+
+            let mut identifier = [0; 2];
+            graphic.read_i8_into(&mut identifier)?;
+
+            if identifier != [82, 68] {
+                return Err(Error::new(ErrorKind::InvalidData, "invalid graphic identifier."));
+            }
+
+            let version = graphic.read_i8()?;
+            let unknown = graphic.read_i8()?;
+            let width = graphic.read_u32::<LittleEndian>()?;
+            let height = graphic.read_u32::<LittleEndian>()?;
+            let length = graphic.read_u32::<LittleEndian>()?;
+            let mut data = vec![0; length as usize];
+            graphic.read_i8_into(&mut data)?;
+
+            Ok(Graphic {
+                identifier, version, _unknown: unknown, width, height, length, data,
             })
         }
     }
