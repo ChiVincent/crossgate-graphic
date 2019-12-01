@@ -3,7 +3,7 @@ extern crate crossgate;
 use std::env;
 use std::process;
 use crossgate::resource::{Paths, Files};
-use crossgate::structure::GraphicInfo;
+use crossgate::structure::{GraphicInfo, Graphic};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -18,6 +18,11 @@ fn main() {
         process::exit(1);
     });
     let graphic_info = GraphicInfo::new(&mut files.graphic_info).unwrap();
+    let graphic = Graphic::new(&graphic_info[0], &mut files.graphic).unwrap_or_else(|err| {
+        eprintln!("Fatal Error: {}", err);
+        eprintln!("Cannot parse [Graphic.bin], it might be broken.");
+        process::exit(1);
+    });
 
-    println!("{}", graphic_info.len());
+    println!("{:?}, {:?}", graphic_info[3], graphic);
 }
