@@ -164,4 +164,56 @@ pub mod structure {
             })
         }
     }
+
+    #[cfg(test)]
+    mod test {
+        use super::*;
+
+        #[test]
+        fn it_can_make_graphic_info() {
+            let mut chunks: Vec<[u8; 40]> = vec![
+                [
+                    // First chunk
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x01, 0x00, 0x00, 0xE0, 0xFF, 0xFF, 0xFF,
+                    0xE8, 0xFF, 0xFF, 0xFF, 0x40, 0x00, 0x00, 0x00, 0x2F, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0xE7, 0x03, 0x00, 0x00,
+                ],
+                [
+                    // Second chunk
+                    0x01, 0x00, 0x00, 0x00, 0xA8, 0x01, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0xE0, 0xFF, 0xFF, 0xFF, 
+                    0xE8, 0xFF, 0xFF, 0xFF, 0x40, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 
+                    0x00, 0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00,
+                ]
+            ];
+
+            let graphic_info = vec![
+                GraphicInfo::make(&mut chunks[0]).unwrap(),
+                GraphicInfo::make(&mut chunks[1]).unwrap(),
+            ];
+            
+            assert_eq!(graphic_info[0].id, 0);
+            assert_eq!(graphic_info[0].address, 0);
+            assert_eq!(graphic_info[0].length, 424);
+            assert_eq!(graphic_info[0].offset_x, -32);
+            assert_eq!(graphic_info[0].offset_y, -24);
+            assert_eq!(graphic_info[0].width, 64);
+            assert_eq!(graphic_info[0].height, 47);
+            assert_eq!(graphic_info[0].tile_east, 1);
+            assert_eq!(graphic_info[0].tile_south, 1);
+            assert_eq!(graphic_info[0].access, 1);
+            assert_eq!(graphic_info[0].map_id, 999);
+
+            assert_eq!(graphic_info[1].id, 1);
+            assert_eq!(graphic_info[1].address, 424);
+            assert_eq!(graphic_info[1].length, 18);
+            assert_eq!(graphic_info[1].offset_x, -32);
+            assert_eq!(graphic_info[1].offset_y, -24);
+            assert_eq!(graphic_info[1].width, 64);
+            assert_eq!(graphic_info[1].height, 48);
+            assert_eq!(graphic_info[1].tile_east, 1);
+            assert_eq!(graphic_info[1].tile_south, 1);
+            assert_eq!(graphic_info[1].access, 0);
+            assert_eq!(graphic_info[1].map_id, 18);
+        }
+    }
 }
