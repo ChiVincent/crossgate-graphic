@@ -168,6 +168,7 @@ pub mod structure {
     #[cfg(test)]
     mod test {
         use super::*;
+        use std::fs::File;
 
         #[test]
         fn it_can_make_graphic_info() {
@@ -214,6 +215,14 @@ pub mod structure {
             assert_eq!(graphic_info[1].tile_south, 1);
             assert_eq!(graphic_info[1].access, 0);
             assert_eq!(graphic_info[1].map_id, 18);
+        }
+
+        #[test]
+        fn it_can_new_graphic_info() {
+            let mut file = File::open("resources/GraphicInfo.test.bin").unwrap();
+            let graphic_info = GraphicInfo::new(&mut file).unwrap();
+
+            assert_eq!(graphic_info.len(), 2);
         }
     }
 }
