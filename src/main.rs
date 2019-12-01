@@ -24,5 +24,5 @@ fn main() {
         process::exit(1);
     });
 
-    println!("{:?}, {:?}", graphic_info[0], graphic);
+    println!("{:?}, {:?}", graphic_info[3], graphic);
 }
