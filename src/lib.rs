@@ -206,6 +206,7 @@ pub mod structure {
     mod test {
         use super::*;
         use std::fs::File;
+        use std::io::{Seek, SeekFrom};
 
         #[test]
         fn it_can_make_graphic_info() {
@@ -260,6 +261,34 @@ pub mod structure {
             let graphic_info = GraphicInfo::new(&mut file).unwrap();
 
             assert_eq!(graphic_info.len(), 2);
+        }
+
+        #[test]
+        fn it_can_new_graphic() {
+            let graphic_info = GraphicInfo {
+                id: 0, address: 0, length: 424, offset_x: -32, offset_y: -24, width: 64, height: 47,
+                tile_east: 1, tile_south: 1, access: 1, _unknown: [0; 5], map_id: 999
+            };
+            let mut graphic_file = File::open("resources/Graphic.test.bin").unwrap();
+
+            let graphic = Graphic::new(&graphic_info, &mut graphic_file).unwrap();
+
+            assert_eq!(graphic.identifier, [82, 68]);
+            assert_eq!(graphic.version, 1);
+            assert_eq!(graphic.width, 64);
+            assert_eq!(graphic.height, 47);
+            assert_eq!(graphic.length, 424);
+        }
+
+        #[test]
+        fn it_cannot_new_graphic() {
+            let graphic_info = GraphicInfo {
+                id: 0, address: 0, length: 424, offset_x: -32, offset_y: -24, width: 64, height: 47,
+                tile_east: 1, tile_south: 1, access: 1, _unknown: [0; 5], map_id: 999
+            };
+            let mut graphic_file = File::open("resources/GraphicInfo.test.bin").unwrap(); // Open the wrong file
+
+            assert!(Graphic::new(&graphic_info, &mut graphic_file).is_err());
         }
     }
 }
